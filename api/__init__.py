@@ -52,4 +52,15 @@ def create_app():
 
     app.register_blueprint(bot_bp)
 
+    @app.route("/", methods=["GET"])
+    def home():
+        return {
+            "status": "success",
+            "message": "Mental Health Chatbot API is running!",
+            "endpoints": {
+                "chatbot": "POST /chatbot"
+            }
+        }, 200
+
     return app
+
