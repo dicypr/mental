@@ -1,0 +1,16 @@
+cryptography
+flask
+flask-sqlalchemy
+flask-cors
+flask-login
+flask-marshmallow
+marshmallow-sqlalchemy
+marshmallow
+flask-cors
+pymysql
+groq
+google-genai
+python-dotenv
+werkzeug
+flask-jwt-extended
+
