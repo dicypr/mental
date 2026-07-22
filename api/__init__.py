@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask
+from flask import Flask, render_template_string
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_marshmallow import Marshmallow
@@ -17,26 +17,12 @@ ma = Marshmallow()
 def create_app():
     app = Flask(__name__)
 
-
-    # app.config["SQLALCHEMY_DATABASE_URI"] = (
-    #     os.environ.get("SQLALCHEMY_DATABASE_URI")
-    #     or "mysql+pymysql://user:password@localhost/mentalapp"
-    # )
     CORS(app)
 
     app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY") or "secret-key"
 
-    # db.init_app(app)
     login_manager.init_app(app)
     ma.init_app(app)
-
-    # with app.app_context():
-    #     db.create_all()
-
-    # configuring the login login_manager
-    # login_manager.login_view = "auth.login"
-    # login_manager.login_message = "Please log in to access this."
-    # login_manager.session_protection = "strong"
 
     from api.models import User
 
@@ -45,24 +31,28 @@ def create_app():
         return User.query.get(int(user_id))
 
     from api.routes.auth import auth_bp
-
     app.register_blueprint(auth_bp)
 
     from api.routes.chatbot import bot_bp
-
     app.register_blueprint(bot_bp)
 
     @app.route("/", methods=["GET"])
     @app.route("/api/index.py", methods=["GET"])
     def home():
+        template_paths = [
+            os.path.join(os.path.dirname(__file__), "..", "templates", "index.html"),
+            os.path.join(os.path.dirname(__file__), "templates", "index.html"),
+        ]
+        for path in template_paths:
+            if os.path.exists(path):
+                with open(path, "r", encoding="utf-8") as f:
+                    return render_template_string(f.read())
         return {
             "status": "success",
-            "message": "Mental Health Chatbot API is live & running!",
+            "message": "Mental Health Chatbot API is running!",
             "endpoints": {
                 "chatbot": "POST /chatbot"
             }
         }, 200
 
     return app
-
-
